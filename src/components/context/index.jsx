@@ -19,6 +19,7 @@ export const UserProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  const userType = localStorage.getItem("userType");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +32,9 @@ export const UserProvider = ({ children }) => {
           return;
         }
 
-        const response = await api.get("/users/me");
+        const endpoint = (userType==="User")? "/users/me":"super-admin/me";
+
+        const response = await api.get(endpoint);
         console.log("Tokennnn brought User",response.data);
         setUser(response.data);
         setError(null);

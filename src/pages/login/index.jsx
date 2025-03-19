@@ -3,8 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../common/axios-interceptor/index";
 import { useUser } from "../../components/context/index";
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Radio } from "antd";
+import 'antd/dist/reset.css';
 import { z } from "zod";
+import { useState } from "react";
 import "./login.css"; 
 
 const loginSchema = z.object({
@@ -13,6 +15,8 @@ const loginSchema = z.object({
 });
 
 export const Login = () => {
+  const [userType, setUserType] = useState("user"); // Default to "user"
+  
   const {
     register,
     handleSubmit,
@@ -25,21 +29,35 @@ export const Login = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    console.log("Submitting Data:", data);
+    console.log("Submitting Data:", data); // Debugging: Check if data is logged
     try {
-      const response = await api.post("/users/login", data);
+      // Choose endpoint based on user type selection
+      const endpoint = userType === "superAdmin" ? "/super-admin/login" : "/users/login";
+      
+      console.log("Endpoint:", endpoint); // Debugging: Check if endpoint is correct
+      
+      const response = await api.post(endpoint, data);
+  
+      console.log("Response:", response); // Debugging: Check the response from the server
   
       if (response.data?.user) {
-        console.log(response.data.user);
+        console.log("User Data:", response.data.user); // Debugging: Check user data
         setUser(response.data.user);
+        localStorage.setItem("userType", userType);
        
-        navigate("/dashboard");
+        console.log("Navigating to:", userType === "user" ? "/dashboard" : "/superAdmin/Dashboard"); // Debugging: Check navigation path
+        navigate(userType === "user" ? "/dashboard" : "/superAdmin/Dashboard");
       } else {
         console.log("User not found or invalid credentials");
       }
     } catch (error) {
-      console.error("Server Side Error", error);
+      console.error("Server Side Error", error); // Debugging: Check for any server-side errors
     }
+  };
+
+  const handleUserTypeChange = (e) => {
+    console.log("User Type Changed:", e.target.value); // Debugging: Check if user type is changing
+    setUserType(e.target.value);
   };
 
   return (
@@ -48,11 +66,19 @@ export const Login = () => {
         <h2 className="login-title">Login</h2>
         <form
           onSubmit={handleSubmit((data) => {
-            console.log("Form Submitted with:", data); 
+            console.log("Form Submitted with:", data); // Debugging: Check if form data is logged
             onSubmit(data);
           })}
           className="login-form"
         >
+          <div className="form-group role-selector">
+            <label>Login as:</label>
+            <Radio.Group onChange={handleUserTypeChange} value={userType}>
+              <Radio value="user">User</Radio>
+              <Radio value="superAdmin">Super Admin</Radio>
+            </Radio.Group>
+          </div>
+
           <div className="form-group">
             <label>Email</label>
             <input
@@ -79,9 +105,9 @@ export const Login = () => {
             )}
           </div>
 
-          <Button type="submit" className="login-button">
+          <button type="submit" className="login-button">
             Login
-          </Button>
+          </button>
         </form>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/context/index";
-import "./dashboard.css";
 import { api } from "../../common/axios-interceptor/index";
 import { Button } from "antd";
+import "./dashboard.css";
 
-export const Dashboard = () => {
+export const UserDashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -21,18 +21,22 @@ export const Dashboard = () => {
     }
   }, [user]);
 
+  console.log("DepId::",depId,"user Role :",user.role)
+
   const fetchUsers = async () => {
     try {
       let response;
       if (user?.role === "ADMIN") {
         response = await api.get(`/department/${depId}/users`);
+        setUsers(response.data);
       } else if (user?.role === "MANAGER") {
-        response = await api.get(`/tasks/${user.id}/users`);
+        setUsers(user.subordinates.data);
+        console.log(users)
       } else {
-        response = { data: [user] }; // If normal user, return only themselves
+        response = { data: [user] }; 
       }
 
-      setUsers(response.data);
+      
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {

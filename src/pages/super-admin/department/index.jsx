@@ -1,56 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import {Button} from "antd";
-import 'antd/dist/reset.css'; // For Ant Design v5
-import './department.css'; 
-import { api } from '../../../common/axios-interceptor';
+import React, { useState, useEffect } from "react";
+import { Button } from "antd";
+import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal.jsx";
+import { AddUserModal } from "../../../components/modals/add-user-modal.jsx";
+import "./department.css";
+import { api } from "../../../common/axios-interceptor";
 
 export const Departments = () => {
-  const [departments, setDepartment] = useState([]); 
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState(null); // Track selected department for user addition
 
-  
+ 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        console.log("Ready to fetch");
-        const response = await api.get("/department"); 
-        if (!response) {
-          throw new Error('Failed to fetch organizations');
-        }
-        console.log(response.data);
-        setDepartment(response.data); 
-      } catch (error) {
-        setError(error.message); 
-      } finally {
-        setLoading(false); 
-      }
-    };
+    fetchDepartments();
+  }, [selectedDepartment]);
 
-    fetchOrganizations();
-  }, []); 
+  const fetchDepartments = async () => {
+    try {
+      const response = await api.get("/department");
+      setDepartments(response.data);
+    } catch (error) {
+      console.error("Failed to fetch departments:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDepartmentCreated = (newDep) => {
+    setDepartments([...departments, newDep]);
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
-
-
   return (
-    <div className="organizations-page">
-      {/* Create Organization Button */}
-      <div className="create-org-button-container">
-        <Button type='Primary' className="create-org-button">Create Department</Button>
+    <div className="departments-page">
+      {/* Create Department Button */}
+      <div className="create-dept-button-container">
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Create Department
+        </Button>
       </div>
 
-      {/* Table for Organizations */}
-      <table className="organizations-table">
+      {/* Reusable Modal for Creating Departments */}
+      <CreateOrgDepModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        type="department"
+        onEntityCreated={handleDepartmentCreated}
+      />
+
+      {/* Table for Departments */}
+      <table className="departments-table">
         <thead>
           <tr>
             <th>Department</th>
             <th>Organization</th>
             <th>SuperAdmin</th>
             <th>Users</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -58,26 +68,51 @@ export const Departments = () => {
             <tr key={dep.id}>
               <td>{dep.name}</td>
               <td>
-                {dep.organizations.length > 0
-                  ? dep.organizations.map((org)=>org.name).join(', ') // Display departments as comma-separated list
-                  : 'No departments assigned'}
+                {dep.organizations?.length > 0
+                  ? dep.organizations.map((org) => org.name).join(", ")
+                  : "No organizations assigned"}
+              </td>
+              <td>{dep.superAdmin?.name || "No SuperAdmin assigned"}</td>
+              <td>
+                {dep.users?.map((user) => user.name).join(", ") ??
+                  "No users assigned"}
               </td>
               <td>
-              {dep.superAdmin.name}
-              </td>
-              <td>
-                {dep.users.length > 0
-                  ? dep.users.join(', ') // Display users as comma-separated list
-                  : 'No users assigned'}
+                <Button
+                  type="primary"
+                  onClick={() =>  {
+                   
+                    setSelectedDepartment(dep)
+                    console.log("asdsadsaasdsad",dep) }}
+                >
+                  Add User
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <div className="create-user-button-container">
-        <Button type='Primary' className="create-user-button">Create User</Button>
-      </div>
+      {/* Add User Modal */}
+      {selectedDepartment && (
+  <AddUserModal
+    key={selectedDepartment.id} // Force re-render
+    isOpen={!!selectedDepartment}
+    onClose={() => setSelectedDepartment(null)}
+    organizations={selectedDepartment?.organizations || []}
+    departmentId={selectedDepartment?.id}
+    onUserAdded={(newUser) => {
+      console.log("New User Added:", newUser);
+      const updatedDepartments = departments.map((dep) =>
+        dep.id === selectedDepartment.id
+          ? { ...dep, users: [...(dep.users || []), { ...newUser, departmentId: dep.id }] }
+          : dep
+      );
+      setDepartments(updatedDepartments);
+    }}
+  />
+)}
+
     </div>
   );
 };

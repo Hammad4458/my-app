@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import './organization.css'; 
-import { api } from '../../../common/axios-interceptor';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Button } from "antd";
+import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal.jsx";
+import "./organization.css";
+import { api } from "../../../common/axios-interceptor";
 
 export const Organizations = () => {
-  const [organizations, setOrganizations] = useState([]); 
+  const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        console.log("Ready to fetch");
-        const response = await api.get("/organization"); 
-        if (!response) {
-          throw new Error('Failed to fetch organizations');
-        }
-        console.log(response.data);
-        setOrganizations(response.data); 
-      } catch (error) {
-        setError(error.message); 
-      } finally {
-        setLoading(false); 
-      }
-    };
-
     fetchOrganizations();
-  }, []); 
+  }, []);
+
+  const fetchOrganizations = async () => {
+    try {
+      const response = await api.get("/organization");
+      setOrganizations(response.data);
+    } catch (error) {
+      console.error("Failed to fetch organizations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOrganizationCreated = (newOrg) => {
+    setOrganizations([...organizations, newOrg]);
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
-
-
   return (
     <div className="organizations-page">
       {/* Create Organization Button */}
       <div className="create-org-button-container">
-        <button className="create-org-button">Create Organization</button>
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Create Organization
+        </Button>
       </div>
+
+      {/* Reusable Modal for Creating Organizations */}
+      <CreateOrgDepModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} type="organization" onEntityCreated={handleOrganizationCreated} />
 
       {/* Table for Organizations */}
       <table className="organizations-table">
@@ -56,21 +58,9 @@ export const Organizations = () => {
           {organizations.map((org) => (
             <tr key={org.id}>
               <td>{org.name}</td>
-              <td>
-                {org.departments.length > 0
-                  ? org.departments.map((dep)=>dep.name).join(', ') // Display departments as comma-separated list
-                  : 'No departments assigned'}
-              </td>
-              <td>
-              {org.superAdmins.length > 0
-                  ? org.superAdmins.map((admin) => admin.name).join(', ') 
-                  : 'No superAdmins assigned'}
-              </td>
-              <td>
-                {org.users.length > 0
-                  ? org.users.join(', ') // Display users as comma-separated list
-                  : 'No users assigned'}
-              </td>
+              <td>{org.departments?.length > 0 ? org.departments.map((dep) => dep.name).join(", ") : "No departments assigned"}</td>
+              <td>{org.superAdmins?.length > 0 ? org.superAdmins.map((admin) => admin.name).join(", ") : "No superAdmins assigned"}</td>
+              <td>{org.users?.length > 0 ? org.users.map((user)=>user.name).join(", ") : "No users assigned"}</td>
             </tr>
           ))}
         </tbody>

@@ -32,8 +32,7 @@ export const UserProvider = ({ children }) => {
           return;
         }
 
-        const endpoint = (userType==="User")? "/users/me":"super-admin/me";
-
+        const endpoint = (userType==="user")? "users/me":"super-admin/me";
         const response = await api.get(endpoint);
         console.log("Tokennnn brought User",response.data);
         setUser(response.data);

@@ -8,12 +8,12 @@ import { PublicRoute } from "./routes/publicRoutes";
 import { PrivateRoute } from "./routes/protectedRoutes/index";
 import { UserProvider } from "./components/context/index";
 import { SuperAdminDashboard } from "./pages/super-admin/dashboard";
-import 'antd/dist/reset.css'; // For Ant Design v5
-import "./index.css";
+import 'antd/dist/reset.css'; 
 import {UserDashboard} from "../src/pages/user-dashboard/index"
 import { Tasks } from "./pages/tasks";
 import { Organizations } from "./pages/super-admin/organization";
 import { Departments } from "./pages/super-admin/department";
+import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

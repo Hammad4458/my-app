@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal.jsx";
-import "./organization.css";
+import { LogoutButton } from "../../../components/logout/index.jsx";
 import { api } from "../../../common/axios-interceptor";
+import "./organization.css";
 
 export const Organizations = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -33,6 +34,8 @@ export const Organizations = () => {
   }
 
   return (
+    <>
+    <LogoutButton />
     <div className="organizations-page">
       {/* Create Organization Button */}
       <div className="create-org-button-container">
@@ -66,5 +69,6 @@ export const Organizations = () => {
         </tbody>
       </table>
     </div>
+    </>
   );
 };

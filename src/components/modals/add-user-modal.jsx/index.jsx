@@ -4,7 +4,7 @@ import { api } from "../../../common/axios-interceptor";
 
 const { Option } = Select;
 
-export const AddUserModal = ({ isOpen, onClose, onUserAdded, organizations,departmentId }) => {
+export const AddUserModal = ({ isOpen, onClose, onUserAdded, organizations, departmentId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [managers, setManagers] = useState([]);
@@ -13,6 +13,7 @@ export const AddUserModal = ({ isOpen, onClose, onUserAdded, organizations,depar
   useEffect(() => {
     if (isOpen) {
       fetchManagers();
+      form.resetFields(); // Reset form fields when modal opens
     }
   }, [isOpen]);
 
@@ -28,41 +29,42 @@ export const AddUserModal = ({ isOpen, onClose, onUserAdded, organizations,depar
   const handleSubmit = async (formValues) => {
     setLoading(true);
     try {
-        console.log("Department ID before merging:", departmentId);
-        console.log("Form Values before merging:", formValues);
+      console.log("Department ID before merging:", departmentId);
+      console.log("Form Values before merging:", formValues);
 
-        // Construct payload
-        const payload = { 
-            ...formValues, 
-            department: departmentId // Explicitly adding departmentId 
-        };
+      if (!departmentId) {
+        throw new Error("Department ID is missing!");
+      }
 
-        // Ensure departmentId exists
-        if (!departmentId) {
-            throw new Error("Department ID is missing!");
-        }
+      // Construct payload correctly
+      const payload = {
+        name: formValues.name,
+        email: formValues.email,
+        password: formValues.password,
+        role: formValues.role,
+        department: departmentId,
+        organization: formValues.organizationId,
+      };
 
-        // If role is "USER", ensure managerId is included
-        if (formValues.role === "USER" && formValues.managerId) {
-            payload.manager = formValues.managerId; 
-        }
+      if (formValues.role === "USER" && formValues.managerId) {
+        payload.manager = formValues.managerId;
+      }
 
-        console.log("Final Payload:", payload); // Debugging
+      console.log("Final Payload:", payload);
 
-        const response = await api.post("/users/create", payload);
-        
-        message.success("User created successfully!");
-        onUserAdded(response.data);
-        //form.resetFields();
-        //onClose();
+      const response = await api.post("/users/create", payload);
+      message.success("User created successfully!");
+
+      onUserAdded(response.data);
+      form.resetFields();
+      onClose();
     } catch (error) {
-        message.error("Failed to create user.");
-        console.error("Error creating user:", error);
+      message.error("Failed to create user.");
+      console.error("Error creating user:", error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
-
+  };
 
   return (
     <Modal title="Add User" open={isOpen} onCancel={onClose} footer={null}>
@@ -80,7 +82,7 @@ export const AddUserModal = ({ isOpen, onClose, onUserAdded, organizations,depar
         </Form.Item>
 
         <Form.Item name="role" label="Role" rules={[{ required: true }]}>
-          <Select onChange={setRole}>
+          <Select onChange={(value) => setRole(value)}>
             <Option value="ADMIN">Admin</Option>
             <Option value="MANAGER">Manager</Option>
             <Option value="USER">User</Option>

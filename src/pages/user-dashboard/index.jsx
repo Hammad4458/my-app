@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/context/index";
 import { api } from "../../common/axios-interceptor/index";
+import { LogoutButton } from "../../components/logout";
 import { Button } from "antd";
 import "./dashboard.css";
 
@@ -11,9 +12,8 @@ export const UserDashboard = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   
-  console.log("user is is:",user);
-  const depId=user.department.id;
-  const depName=user.department.name;
+  const depId=user?.department?.id;
+  const depName=user?.department?.name;
 
   useEffect(() => {
     if (user) {
@@ -30,10 +30,11 @@ export const UserDashboard = () => {
         response = await api.get(`/department/${depId}/users`);
         setUsers(response.data);
       } else if (user?.role === "MANAGER") {
-        setUsers(user.subordinates.data);
+        setUsers(user.subordinates);
         console.log(users)
       } else {
         response = { data: [user] }; 
+        setUsers(response.data);
       }
 
       
@@ -53,6 +54,8 @@ export const UserDashboard = () => {
   }
 
   return (
+    <>
+    <LogoutButton />
     <div className="dashboard-container">
       <div className="header">
         <h2>User List</h2>
@@ -69,8 +72,8 @@ export const UserDashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {users.length > 0 ? (
-            users.map((user) => (
+          {users?.length > 0 ? (
+            users?.map((user) => (
               <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
@@ -91,5 +94,6 @@ export const UserDashboard = () => {
         </tbody>
       </table>
     </div>
+    </>
   );
 };

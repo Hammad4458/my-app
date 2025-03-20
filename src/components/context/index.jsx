@@ -17,40 +17,49 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userType, setUserType] = useState(localStorage.getItem("userType"));
 
   const navigate = useNavigate();
-  const userType = localStorage.getItem("userType");
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = Cookies.get("token");
-
-        if (!token) {
+        if (!token) return;
+  
+        if (!userType) {
+          console.warn("No userType found, cannot determine API endpoint");
           setLoading(false);
-          navigate("/login");
           return;
         }
-
-        const endpoint = (userType==="user")? "users/me":"super-admin/me";
-        const response = await api.get(endpoint);
-        console.log("Tokennnn brought User",response.data);
-        setUser(response.data);
-        setError(null);
+  
+        const endpoint = userType === "user" ? "/users/me" : "/super-admin/me";
+        console.log("Fetching user data from:", endpoint);
+  
+        const response = await api.get(endpoint, { withCredentials: true });
+  
+        if (response?.data) {
+          console.log("Fetched user data:", response.data);
+          setUser(response.data);
+        } else {
+          console.error("Received empty user data, setting user to null");
+          setUser(null);
+        }
       } catch (err) {
         console.error("Error fetching user data:", err);
-        setError("Failed to authenticate user");
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchUserData();
-  }, []);
+  }, [userType]);
+  
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, error }}>
-      {children}
+      {loading ? <p>Loading user data...</p> : children}
     </UserContext.Provider>
   );
 };

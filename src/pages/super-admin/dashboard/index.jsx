@@ -1,6 +1,7 @@
 import React from 'react';
-import './dashboard.css'; 
+import {LogoutButton} from "../../../components/logout/index"
 import { useNavigate } from "react-router-dom";
+import './dashboard.css'; 
 
 export const SuperAdminDashboard = () => {
     const navigate = useNavigate();
@@ -15,6 +16,8 @@ export const SuperAdminDashboard = () => {
 
 
   return (
+    <>
+    <LogoutButton />
     <div className="dashboard-container">
       <h1>Main Page</h1>
       <div className="button-container">
@@ -26,5 +29,6 @@ export const SuperAdminDashboard = () => {
         
       </div>
     </div>
+    </>
   );
 };

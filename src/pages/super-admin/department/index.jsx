@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal.jsx";
 import { AddUserModal } from "../../../components/modals/add-user-modal.jsx";
-import "./department.css";
 import { api } from "../../../common/axios-interceptor";
+import { LogoutButton } from "../../../components/logout/index.jsx";
+import "./department.css";
 
 export const Departments = () => {
   const [departments, setDepartments] = useState([]);
@@ -36,6 +37,8 @@ export const Departments = () => {
   }
 
   return (
+    <>
+    <LogoutButton />
     <div className="departments-page">
       {/* Create Department Button */}
       <div className="create-dept-button-container">
@@ -114,5 +117,6 @@ export const Departments = () => {
 )}
 
     </div>
+    </>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "antd";
-import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal.jsx";
+import { CreateOrgDepModal } from "../../../components/modals/org-dep-modal/index.jsx";
 import { LogoutButton } from "../../../components/logout/index.jsx";
 import { api } from "../../../common/axios-interceptor";
 import "./organization.css";

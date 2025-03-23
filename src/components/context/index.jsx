@@ -33,10 +33,7 @@ export const UserProvider = ({ children }) => {
           return;
         }
   
-        const endpoint = userType === "user" ? "/users/me" : "/super-admin/me";
-        console.log("Fetching user data from:", endpoint);
-  
-        const response = await api.get(endpoint, { withCredentials: true });
+        const response = await api.get("/users/me", { withCredentials: true });
   
         if (response?.data) {
           console.log("Fetched user data:", response.data);

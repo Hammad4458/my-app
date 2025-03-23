@@ -55,10 +55,7 @@ export const Login = () => {
     }
   };
 
-  const handleUserTypeChange = (e) => {
-    console.log("User Type Changed:", e.target.value); // Debugging: Check if user type is changing
-    setUserType(e.target.value);
-  };
+  
 
   return (
     <div className="login-container">
@@ -71,14 +68,7 @@ export const Login = () => {
           })}
           className="login-form"
         >
-          <div className="form-group role-selector">
-            <label>Login as:</label>
-            <Radio.Group onChange={handleUserTypeChange} value={userType}>
-              <Radio value="user">User</Radio>
-              <Radio value="superAdmin">Super Admin</Radio>
-            </Radio.Group>
-          </div>
-
+       
           <div className="form-group">
             <label>Email</label>
             <input

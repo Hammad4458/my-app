@@ -13,13 +13,13 @@ export const Tasks = () => {
   const [selectedTask, setSelectedTask] = useState(null); // Store task for view/edit
 
   const location = useLocation();
-  const depName = location.state?.department || "Not Found";
   const navigate = useNavigate();
   const { user } = useUser();
   const role = user.role;
   const { userId } = useParams();
+  const depName=user.department.name;
 
-  console.log("Got Tasks", userId, depName);
+  console.log("Got Tasks", userId, depName,role);
 
   useEffect(() => {
     fetchTasks();

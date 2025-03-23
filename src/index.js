@@ -7,12 +7,9 @@ import { CookiesProvider } from "react-cookie";
 import { PublicRoute } from "./routes/publicRoutes";
 import { PrivateRoute } from "./routes/protectedRoutes/index";
 import { UserProvider } from "./components/context/index";
-import { SuperAdminDashboard } from "./pages/super-admin/dashboard";
 import 'antd/dist/reset.css'; 
 import {UserDashboard} from "../src/pages/user-dashboard/index"
 import { Tasks } from "./pages/tasks";
-import { Organizations } from "./pages/super-admin/organization";
-import { Departments } from "./pages/super-admin/department";
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -26,11 +23,9 @@ root.render(
           </Route>
 
           <Route element={<PrivateRoute />}>
-          <Route path="/superAdmin/dashboard" element={<SuperAdminDashboard />} />
-          <Route path="/superAdmin/organization" element={<Organizations />} />
-          <Route path="/superAdmin/department" element={<Departments />} />
             <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/dashboard/users/:userId/tasks" element={<Tasks />} />
+            <Route path="/dashboard/tasks" element={<Tasks />} />
           </Route>
         </Routes>
       </UserProvider>

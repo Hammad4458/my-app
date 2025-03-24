@@ -3,21 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/context/index";
 import { api } from "../../common/axios-interceptor/index";
 import { LogoutButton } from "../../components/logout";
-import { Button, Tabs } from "antd";
+import { Button, Tabs, Table, Space, message } from "antd";
 import { EditUserModal } from "../../components/modals/edit-user-modal/index";
-import { TaskModal } from "../../components/modals/task-modal/index"; // Import Task Modal
+import { TaskModal } from "../../components/modals/task-modal/index";
 import "./dashboard.css";
 
 export const UserDashboard = () => {
   const [users, setUsers] = useState([]);
-  const [tasks, setTasks] = useState([]); // State for tasks
-  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  
+
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -45,9 +46,9 @@ export const UserDashboard = () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
+      message.error("Failed to fetch users");
     } finally {
-      setLoading(false);
+      setLoadingUsers(false);
     }
   };
 
@@ -57,14 +58,19 @@ export const UserDashboard = () => {
       const response = await api.get(`/tasks/department/${depId}`);
       setTasks(response.data);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      message.error("Failed to fetch tasks");
     } finally {
       setLoadingTasks(false);
     }
   };
 
-  const handleViewTask = (taskId) => {
-    navigate(`/dashboard/users/${taskId}/tasks`);
+  const handleViewTasks = (userId) => {
+    navigate(`/dashboard/users/${userId}/tasks`);
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
   };
 
   const handleEditTask = (task) => {
@@ -72,107 +78,102 @@ export const UserDashboard = () => {
     setIsTaskModalOpen(true);
   };
 
-  const handleTaskUpdated = (updatedTask) => {
-    setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+  const handleUserUpdated = (updatedUser) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === updatedUser.id ? { ...user, ...updatedUser } : user
+      )
+    );
   };
 
-  const userList = (
-    <div className="dashboard-container">
-      <div className="header">
-        <h2>User List</h2>
-      </div>
+  const handleTaskCreated = () => {
+    fetchTasks(); // Refresh the task list after task creation
+  };
 
-      <table className="task-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Department</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users?.length > 0 ? (
-            users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>{depName}</td>
-                <td>
-                  <Button onClick={() => handleViewTask(user.id, depName)}>
-                    View Tasks
-                  </Button>
-                  {role !== "USER" && (
-                    <Button onClick={() => handleEditTask(user)}>Edit</Button>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="no-data">
-                No users available
-              </td>
-            </tr>
+  const userColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Department",
+      dataIndex: "department",
+      key: "department",
+      render: () => depName, // Display department name
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleViewTasks(record.id)}>
+            View Tasks
+          </Button>
+          {role !== "USER" && (
+            <Button type="default" onClick={() => handleEditUser(record)}>
+              Edit
+            </Button>
           )}
-        </tbody>
-      </table>
-    </div>
-  );
+        </Space>
+      ),
+    },
+  ];
 
-  const taskList = (
-    <div className="dashboard-container">
-      <div className="header">
-        <h2>Task List</h2>
-      </div>
-
-      {loadingTasks ? (
-        <div>Loading Tasks...</div>
-      ) : (
-        <table className="task-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Due Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks?.length > 0 ? (
-              tasks.map((task) => (
-                <tr key={task.id}>
-                  <td>{task.title}</td>
-                  <td>{task.description}</td>
-                  <td>{task.priority}</td>
-                  <td>{task.status}</td>
-                  <td>{new Date(task.dueDate).toLocaleDateString()}</td>
-                  <td>
-                    <Button onClick={() => handleViewTask(task.id)}>
-                      View Task
-                    </Button>
-                    {role !== "USER" && (
-                      <Button onClick={() => handleEditTask(task)}>Edit</Button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="no-data">
-                  No tasks available
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const taskColumns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Priority",
+      dataIndex: "priority",
+      key: "priority",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "Due Date",
+      dataIndex: "dueDate",
+      key: "dueDate",
+      render: (text) => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleViewTasks(record.id)}>
+            View
+          </Button>
+          {role !== "USER" && (
+            <Button type="default" onClick={() => handleEditTask(record)}>
+              Edit
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -184,37 +185,76 @@ export const UserDashboard = () => {
       </div>
 
       {role === "ADMIN" ? (
-        <Tabs
-          defaultActiveKey="1"
-          onChange={(key) => {
-            if (key === "2") {
-              fetchTasks();
-            }
-          }}
-        >
-          <Tabs.TabPane tab="Users" key="1">
-            {userList}
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Tasks" key="2">
-            {taskList}
-          </Tabs.TabPane>
-        </Tabs>
+        <div className="centered-tabs">
+          <Tabs
+            defaultActiveKey="1"
+            onChange={(key) => {
+              if (key === "2") {
+                fetchTasks();
+              }
+            }}
+          >
+            <Tabs.TabPane tab="Users" key="1">
+              <Table
+                className="table"
+                columns={userColumns}
+                dataSource={users}
+                rowKey="id"
+                loading={loadingUsers}
+                pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Tasks" key="2">
+              <div className="create-task-container">
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    console.log("Create Task button clicked");
+                    setSelectedTask(null);
+                    setIsTaskModalOpen(true);
+                  }}
+                >
+                  Create Task
+                </Button>
+              </div>
+              <Table
+                className="table"
+                columns={taskColumns}
+                dataSource={tasks}
+                rowKey="id"
+                loading={loadingTasks}
+                pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+              />
+            </Tabs.TabPane>
+          </Tabs>
+        </div>
       ) : (
-        userList
+        <Table
+          className="table"
+          columns={userColumns}
+          dataSource={users}
+          rowKey="id"
+          loading={loadingUsers}
+          pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+        />
       )}
 
       <EditUserModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         userData={selectedUser}
+        onUserUpdated={handleUserUpdated}
       />
 
-      <TaskModal
-        open={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        task={selectedTask}
-        onTaskUpdated={handleTaskUpdated}
-      />
+     
+        <TaskModal
+          open={isTaskModalOpen}
+          onClose={() => setIsTaskModalOpen(false)}
+          task={selectedTask}
+          onUserUpdated={handleUserUpdated}
+          onTaskCreated={handleTaskCreated}
+        />
+      
     </>
   );
 };

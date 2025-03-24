@@ -3,7 +3,13 @@
     justify-content: flex-end;
     margin-right: 20px;
 }
+.dashboard-container{
+    h3{
+        color: green;
+        text-align: center;
+    }
+}
 
 .task-table{
-    margin-top: 20px;
+    margin: 40px;
 }

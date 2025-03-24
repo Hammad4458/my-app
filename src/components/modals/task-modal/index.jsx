@@ -39,34 +39,31 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
 
   const handleSubmit = async (values) => {
     if (!depId || !userId) {
-      console.log(
-        "Department ID or User ID is missing. Task creation aborted."
-      );
+      console.log("Department ID or User ID is missing. Task creation aborted.");
       return;
     }
-
+  
     values.department = depId;
     values.creator = userId;
     values.dueDate = values.dueDate ? values.dueDate.toISOString() : null;
-
+  
     try {
       if (task) {
-        // Update task
         await api.put(`/tasks/update/${task.id}`, values);
         console.log("Task updated successfully!");
       } else {
-        // Create task
         await api.post("/tasks/create", values);
         console.log("Task created successfully!");
       }
-
+  
       form.resetFields();
-      onTaskCreated();
-      onClose();
+      onTaskCreated();  // Refresh the tasks after creation
+      onClose(); // Close the modal
     } catch (error) {
       console.error("Error submitting task:", error);
     }
   };
+  
 
   return (
     <Modal

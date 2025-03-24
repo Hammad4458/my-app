@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Login } from "./pages/login/index";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import { PublicRoute } from "./routes/publicRoutes";
 import { PrivateRoute } from "./routes/protectedRoutes/index";
@@ -19,6 +20,7 @@ root.render(
       <UserProvider>
         <Routes>
           <Route element={<PublicRoute />}>
+          <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
           </Route>
 

@@ -21,6 +21,7 @@ export const EditUserModal = ({ isOpen, onClose, userData, onUserUpdated }) => {
       });
     }
   }, [isOpen, userData]);
+  
 
   const handleUpdate = async (formValues) => {
     setLoading(true);
@@ -30,18 +31,20 @@ export const EditUserModal = ({ isOpen, onClose, userData, onUserUpdated }) => {
         email: formValues.email,
         role: formValues.role,
       };
-
+  
       await api.patch(`/users/${userData.id}`, payload);
       message.success("User updated successfully!");
-      onUserUpdated({ ...userData, ...payload });
+  
+      onUserUpdated({ ...userData, ...payload }); // ✅ Update user in state
+      form.resetFields(); // Reset form after success
       onClose();
     } catch (error) {
       message.error("Failed to update user.");
-      console.error("Error updating user:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <Modal title="Edit User" open={isOpen} onCancel={onClose} footer={null}>

@@ -1,5 +1,6 @@
 .dashboard-container {
     padding: 20px;
+    margin-right: 20px;
   }
   
   .header {
@@ -22,27 +23,18 @@
     background-color: #0056b3;
   }
   
-  .task-table {
-    width: 100%;
-    border-collapse: collapse;
+  .table{
+    margin: 40px;
+  }
+  .centered-tabs .ant-tabs-nav {
+    display: flex;
+    justify-content: center;
   }
   
-  .task-table th,
-  .task-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
+  .centered-tabs .ant-tabs-nav-wrap {
+    justify-content: center;
   }
   
-  .task-table th {
-    background-color: #f4f4f4;
-  }
-  
-  .no-data {
-    text-align: center;
-    font-style: italic;
-  }
-
   .info{
     display: flex;
     justify-content: center;

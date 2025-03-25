@@ -1,4 +1,8 @@
+.info{
+  margin-top: 40px;
+}
 .dashboard-container {
+  margin-top: 20px;
     padding: 20px;
     margin-right: 20px;
   }

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/context/index";
 import { api } from "../../common/axios-interceptor/index";
-import { LogoutButton } from "../../components/logout";
-import { Form, Button, Tabs, Table, Space, message, Select } from "antd";
+import { Header } from "../../components/header/index";
+import { Button, Tabs, Table, Space, message, Select } from "antd";
 import { EditUserModal } from "../../components/modals/edit-user-modal/index";
 import { TaskModal } from "../../components/modals/task-modal/index";
 import "./dashboard.css";
-import { render } from "@testing-library/react";
 
 export const UserDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -204,7 +203,7 @@ export const UserDashboard = () => {
 
   return (
     <>
-      <LogoutButton />
+      <Header />
       <div className="info">
         <h3>
           {user.name} - {user.role}

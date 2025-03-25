@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useUser } from "../../components/context/index";
-import { LogoutButton } from "../../components/logout/index";
+import { Header } from "../../components/header/index";
 import { api } from "../../common/axios-interceptor/index";
 import { Button, Table } from "antd";
 import { TaskModal } from "../../components/modals/task-modal/index";
@@ -96,7 +96,7 @@ export const Tasks = () => {
 
   return (
     <>
-      <LogoutButton />
+      <Header />
 
       <div className="dashboard-container">
         

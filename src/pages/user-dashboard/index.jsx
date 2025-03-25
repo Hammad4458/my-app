@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../components/context/index";
 import { api } from "../../common/axios-interceptor/index";
 import { LogoutButton } from "../../components/logout";
-import { Button, Tabs, Table, Space, message } from "antd";
+import { Form, Button, Tabs, Table, Space, message, Select } from "antd";
 import { EditUserModal } from "../../components/modals/edit-user-modal/index";
 import { TaskModal } from "../../components/modals/task-modal/index";
 import "./dashboard.css";
+import { render } from "@testing-library/react";
 
 export const UserDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -15,12 +16,14 @@ export const UserDashboard = () => {
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [managersList, setManagersList] = useState([]);
+  const [managerUsers, setManagersUsers] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useUser();
+  const { Option } = Select;
 
   const depId = user?.department?.id;
   const depName = user?.department?.name;
@@ -36,8 +39,11 @@ export const UserDashboard = () => {
     try {
       let response;
       if (role === "ADMIN") {
-        response = await api.get(`/department/${depId}/users`);
+        response = await api.get(`/users/${depId}`);
         setUsers(response.data);
+        console.log(response.data,"datatatat");
+        response = await api.get(`/users/managers/${depId}`);
+        setManagersList(response.data);
       } else if (role === "MANAGER") {
         setUsers(user.subordinates);
       } else {
@@ -61,6 +67,21 @@ export const UserDashboard = () => {
       message.error("Failed to fetch tasks");
     } finally {
       setLoadingTasks(false);
+    }
+  };
+
+  const handleManagerUsers = async (managerId) => {
+    if (!managerId) {
+      setManagersUsers([]);
+    } else {
+      try {
+        const response = await api.get(
+          `/users/assignedUsers/managerId/${managerId}`
+        );
+        setManagersUsers(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -110,7 +131,13 @@ export const UserDashboard = () => {
       title: "Department",
       dataIndex: "department",
       key: "department",
-      render: () => depName, // Display department name
+      render: (department) => department?.name, 
+    },
+    {
+      title: "Organization",
+      dataIndex: "organization",
+      key: "organization",
+      render:(organization)=>organization?.name,
     },
     {
       title: "Actions",
@@ -226,6 +253,31 @@ export const UserDashboard = () => {
                 pagination={{ pageSize: 5, position: ["bottomCenter"] }}
               />
             </Tabs.TabPane>
+
+            <Tabs.TabPane tab="Managers" key="3">
+              <div className="manager-form">
+                <Select
+                  placeholder="Select Manager"
+                  allowClear
+                  onChange={handleManagerUsers}
+                  className="manager-select"
+                >
+                  {managersList.map((manager) => (
+                    <Option key={manager.id} value={manager.id}>
+                      {manager.name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+
+              <Table
+                className="table"
+                columns={userColumns}
+                dataSource={managerUsers}
+                rowKey="id"
+                pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+              />
+            </Tabs.TabPane>
           </Tabs>
         </div>
       ) : (
@@ -246,15 +298,13 @@ export const UserDashboard = () => {
         onUserUpdated={handleUserUpdated}
       />
 
-     
-        <TaskModal
-          open={isTaskModalOpen}
-          onClose={() => setIsTaskModalOpen(false)}
-          task={selectedTask}
-          onUserUpdated={handleUserUpdated}
-          onTaskCreated={handleTaskCreated}
-        />
-      
+      <TaskModal
+        open={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        task={selectedTask}
+        onUserUpdated={handleUserUpdated}
+        onTaskCreated={handleTaskCreated}
+      />
     </>
   );
 };

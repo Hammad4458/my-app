@@ -42,4 +42,14 @@
       color: green;
     }
   }
+
+  .manager-form{
+    width: 300px;
+    margin-left: 40px;
+    
+  }
+
+  .manager-select{
+    width: 100%;
+  }
   

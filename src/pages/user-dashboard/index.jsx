@@ -16,7 +16,7 @@ export const UserDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [managersList, setManagersList] = useState([]);
-  const [managerUsers, setManagersUsers] = useState([]);
+  const [adminsList, setAdminList] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
@@ -43,6 +43,11 @@ export const UserDashboard = () => {
         
         response = await api.get(`/users/managers/${depId}`);
         setManagersList(response.data);
+
+        response = await api.get(`/users/admins/${depId}`);
+        console.log(depId,response.data,"adminsss")
+        setAdminList(response.data);
+        
       } else if (role === "MANAGER") {
         setUsers(user.subordinates);
       } else {
@@ -69,20 +74,7 @@ export const UserDashboard = () => {
     }
   };
 
-  const handleManagerUsers = async (managerId) => {
-    if (!managerId) {
-      setManagersUsers([]);
-    } else {
-      try {
-        const response = await api.get(
-          `/users/assignedUsers/managerId/${managerId}`
-        );
-        setManagersUsers(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+  
 
   const handleViewTasks = (userId) => {
     navigate(`/dashboard/users/${userId}/tasks`);
@@ -121,28 +113,41 @@ export const UserDashboard = () => {
       dataIndex: "email",
       key: "email",
     },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Department",
-      dataIndex: "department",
-      key: "department",
-      render: (department) => department?.name, 
-    },
-    {
-      title: "Organization",
-      dataIndex: "organization",
-      key: "organization",
-      render:(organization)=>organization?.name,
-    },
+   
     {
       title: "Manager",
       dataIndex: "manager",
       key: "manager",
       render:(manager)=>manager?.name,
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleViewTasks(record.id)}>
+            View Tasks
+          </Button>
+          {role !== "USER" && (
+            <Button type="default" onClick={() => handleEditUser(record)}>
+              Edit
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  const managerColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
       title: "Actions",
@@ -207,6 +212,35 @@ export const UserDashboard = () => {
     },
   ];
 
+  const adminColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleViewTasks(record.id)}>
+            View Tasks
+          </Button>
+          {role !== "USER" && (
+            <Button type="default" onClick={() => handleEditUser(record)}>
+              Edit
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <>
       <Header />
@@ -259,25 +293,24 @@ export const UserDashboard = () => {
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="Managers" key="3">
-              <div className="manager-form">
-                <Select
-                  placeholder="Select Manager"
-                  allowClear
-                  onChange={handleManagerUsers}
-                  className="manager-select"
-                >
-                  {managersList.map((manager) => (
-                    <Option key={manager.id} value={manager.id}>
-                      {manager.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
+             
 
               <Table
                 className="table"
-                columns={userColumns}
-                dataSource={managerUsers}
+                columns={managerColumns}
+                dataSource={managersList}
+                rowKey="id"
+                pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+              />
+            </Tabs.TabPane>
+
+            <Tabs.TabPane tab="Admins" key="4">
+             
+
+              <Table
+                className="table"
+                columns={adminColumns}
+                dataSource={adminsList}
                 rowKey="id"
                 pagination={{ pageSize: 5, position: ["bottomCenter"] }}
               />

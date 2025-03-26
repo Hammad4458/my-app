@@ -36,7 +36,7 @@ export const UserProvider = ({ children }) => {
         const response = await api.get("/users/me", { withCredentials: true });
   
         if (response?.data) {
-          console.log("Fetched user data:", response.data);
+          
           setUser(response.data);
         } else {
           console.error("Received empty user data, setting user to null");

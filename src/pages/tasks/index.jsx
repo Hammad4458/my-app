@@ -13,13 +13,11 @@ export const Tasks = () => {
   const [selectedTask, setSelectedTask] = useState(null); // Store task for view/edit
 
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useUser();
   const role = user.role;
   const { userId } = useParams();
   const depName = user.department.name;
 
-  console.log("Got Tasks", userId, depName, role);
 
   useEffect(() => {
     fetchTasks();
@@ -28,7 +26,6 @@ export const Tasks = () => {
   const fetchTasks = async () => {
     try {
       const response = await api.get(`/tasks/assigned/${userId}`);
-      console.log("Particular Tasks:", response.data);
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);

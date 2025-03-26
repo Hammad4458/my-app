@@ -20,7 +20,7 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
     if (task) {
       form.setFieldsValue({
         ...task,
-        dueDate: task.dueDate ? dayjs(task.dueDate) : null, // Convert string to Date object
+        dueDate: task.dueDate ? dayjs(task.dueDate) : null,
         assignedUsers: task.assignedUsers.map((u) => u.id),
       });
     } else {
@@ -30,7 +30,7 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get(`/department/${depId}/users`);
+      const response = await api.get(`/users/${depId}`);
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -39,7 +39,7 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
 
   const handleSubmit = async (values) => {
     if (!depId || !userId) {
-      console.log("Department ID or User ID is missing. Task creation aborted.");
+      
       return;
     }
   
@@ -50,10 +50,10 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
     try {
       if (task) {
         await api.put(`/tasks/update/${task.id}`, values);
-        console.log("Task updated successfully!");
+        
       } else {
         await api.post("/tasks/create", values);
-        console.log("Task created successfully!");
+        
       }
   
       form.resetFields();

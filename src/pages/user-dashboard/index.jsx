@@ -40,7 +40,7 @@ export const UserDashboard = () => {
       if (role === "ADMIN") {
         response = await api.get(`/users/${depId}`);
         setUsers(response.data);
-        console.log(response.data,"datatatat");
+        
         response = await api.get(`/users/managers/${depId}`);
         setManagersList(response.data);
       } else if (role === "MANAGER") {
@@ -139,6 +139,12 @@ export const UserDashboard = () => {
       render:(organization)=>organization?.name,
     },
     {
+      title: "Manager",
+      dataIndex: "manager",
+      key: "manager",
+      render:(manager)=>manager?.name,
+    },
+    {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
@@ -235,7 +241,6 @@ export const UserDashboard = () => {
                 <Button
                   type="primary"
                   onClick={() => {
-                    console.log("Create Task button clicked");
                     setSelectedTask(null);
                     setIsTaskModalOpen(true);
                   }}

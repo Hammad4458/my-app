@@ -71,6 +71,11 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
       open={open}
       onCancel={onClose}
       footer={null}
+        modalRender={(modal) => (
+        <div style={{ maxHeight: "75vh", borderRadius: "8px",background:"white", overflowY: "auto" }}>
+          {modal}
+        </div>
+      )}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item name="title" label="Title" rules={[{ required: true }]}>

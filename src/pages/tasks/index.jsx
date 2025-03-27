@@ -5,19 +5,24 @@ import { Header } from "../../components/header/index";
 import { api } from "../../common/axios-interceptor/index";
 import { Button, Table } from "antd";
 import { TaskModal } from "../../components/modals/task-modal/index";
+import { UpdateStatusModal } from "../../components/modals/update-status-modal";
 import "./tasks.css";
 
 export const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null); // Store task for view/edit
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [statusModal, setStatusModal] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [currentStatus, setCurrentStatus] = useState(null);
+
 
   const location = useLocation();
   const { user } = useUser();
   const role = user.role;
   const { userId } = useParams();
   const depName = user.department.name;
-
 
   useEffect(() => {
     fetchTasks();
@@ -35,11 +40,18 @@ export const Tasks = () => {
   const handleViewTask = (task) => {
     setSelectedTask(task);
     setModalVisible(true);
+    setIsReadOnly(true);
   };
 
   const handleEditTask = (task) => {
     setSelectedTask(task);
     setModalVisible(true);
+  };
+
+  const handleStatus = (taskId,status) => {
+    setStatusModal(true);
+    setSelectedTaskId(taskId)
+    setCurrentStatus(status)
   };
 
   const columns = [
@@ -86,6 +98,12 @@ export const Tasks = () => {
               Edit
             </Button>
           )}
+          
+          {role === "USER" && (
+            <Button type="link" onClick={() => handleStatus(task.id,task.status)}>
+              Update
+            </Button>
+          )}
         </>
       ),
     },
@@ -96,13 +114,12 @@ export const Tasks = () => {
       <Header />
 
       <div className="dashboard-container">
-        
         <div className="header">
           <h2>Task Manager</h2>
         </div>
         <h3>{depName}</h3>
 
-        {role === "ADMIN" && (
+        {(role === "ADMIN" || role === "MANAGER") && (
           <div className="create-task-container">
             <Button
               type="primary"
@@ -130,7 +147,18 @@ export const Tasks = () => {
           open={modalVisible}
           onClose={() => setModalVisible(false)}
           onTaskCreated={fetchTasks}
-          task={selectedTask} // Pass task to modal for viewing/editing
+          task={selectedTask}
+          isReadOnly={isReadOnly}
+        />
+      )}
+
+      {statusModal && selectedTask && (
+        <UpdateStatusModal
+          open={statusModal}
+          onClose={() => setStatusModal(false)}
+          taskId={selectedTaskId}
+          currentStatus={currentStatus}
+          onStatusUpdated={fetchTasks}
         />
       )}
     </>

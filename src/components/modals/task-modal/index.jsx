@@ -7,7 +7,7 @@ import "./task-modal.css"
 
 const { Option } = Select;
 
-export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
+export const TaskModal = ({ open, onClose, onTaskCreated, task , isReadOnly }) => {
   const [form] = Form.useForm();
   const [users, setUsers] = useState([]);
   const { user } = useUser();
@@ -68,60 +68,70 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
 
   return (
     <Modal
-      title={task ? "Edit Task" : "Create Task"}
-      open={open}
-      onCancel={onClose}
-      footer={null}
-        modalRender={(modal) => (
-        <div className="task-scroller">
-          {modal}
-        </div>
-      )}
-    >
+    title={task ? "Edit Task" : "Create Task"}
+    open={open}
+    onCancel={onClose}
+    footer={null}
+    className="task-modal" // Add class here
+    modalRender={(modal) => (
+      <div className="task-modal-wrapper">
+        {modal}
+      </div>
+    )}
+  >
+    <div className="task-modal-content">
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-          <Input placeholder="Enter task title" />
-        </Form.Item>
-
-        <Form.Item name="description" label="Description">
-          <Input.TextArea placeholder="Enter task description" />
-        </Form.Item>
-
-        <Form.Item name="dueDate" label="Due Date">
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item name="priority" label="Priority">
-          <Select placeholder="Select priority">
-            <Option value="HIGH">High</Option>
-            <Option value="MEDIUM">Medium</Option>
-            <Option value="LOW">Low</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="status" label="Status">
-          <Select placeholder="Select status">
-            <Option value="PENDING">Pending</Option>
-            <Option value="IN_PROGRESS">In Progress</Option>
-            <Option value="COMPLETED">Completed</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="assignedUsers" label="Assigned Users">
-          <Select mode="multiple" placeholder="Select users">
-            {users.map((user) => (
-              <Option key={user.id} value={user.id}>
-                {user.name}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {role != "USER" && (
-          <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-            {task ? "Update Task" : "Create Task"}
-          </Button>
+        <div className="task-modal-body">
+          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+            <Input placeholder="Enter task title" disabled={isReadOnly} />
+          </Form.Item>
+  
+          <Form.Item name="description" label="Description">
+            <Input.TextArea placeholder="Enter task description" disabled={isReadOnly} />
+          </Form.Item>
+  
+          <Form.Item name="dueDate" label="Due Date">
+            <DatePicker style={{ width: "100%" }} disabled={isReadOnly} />
+          </Form.Item>
+  
+          <Form.Item name="priority" label="Priority">
+            <Select placeholder="Select priority" disabled={isReadOnly}>
+              <Option value="HIGH">High</Option>
+              <Option value="MEDIUM">Medium</Option>
+              <Option value="LOW">Low</Option>
+            </Select>
+          </Form.Item>
+  
+          <Form.Item name="status" label="Status">
+            <Select placeholder="Select status" disabled={isReadOnly}>
+              <Option value="PENDING">Pending</Option>
+              <Option value="IN_PROGRESS">In Progress</Option>
+              <Option value="COMPLETED">Completed</Option>
+            </Select>
+          </Form.Item>
+  
+          <Form.Item name="assignedUsers" label="Assigned Users">
+            <Select mode="multiple" placeholder="Select users" disabled={isReadOnly}>
+              {users.map((user) => (
+                <Option key={user.id} value={user.id}>
+                  {user.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </div>
+  
+        {/* Footer remains fixed */}
+        {role !== "USER" && (
+          <div className="task-modal-footer">
+            <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+              {task ? "Update Task" : "Create Task"}
+            </Button>
+          </div>
         )}
       </Form>
-    </Modal>
+    </div>
+  </Modal>
+  
   );
 };

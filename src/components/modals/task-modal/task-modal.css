@@ -1,6 +1,36 @@
-.task-scroller{
-    max-height: 75vh;
-    border-radius: 8px;
+.task-modal .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 80vh; /* Adjust as needed */
+  }
+  
+  .task-modal .ant-modal-header {
+    position: sticky;
+    top: 0;
     background: white;
+    z-index: 10;
+  }
+  
+  .task-modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  
+  .task-modal-body {
+    flex-grow: 1;
     overflow-y: auto;
-}
+    padding: 16px;
+    max-height: calc(80vh - 120px); /* Adjust based on header/footer height */
+  }
+  
+  .task-modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 16px;
+    z-index: 10;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  }
+  

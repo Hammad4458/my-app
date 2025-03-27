@@ -320,7 +320,7 @@ export const UserDashboard = () => {
       ) : (
         <Table
           className="table"
-          columns={userColumns}
+          columns={managerColumns}
           dataSource={users}
           rowKey="id"
           loading={loadingUsers}

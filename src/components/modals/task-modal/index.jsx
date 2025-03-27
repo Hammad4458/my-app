@@ -3,6 +3,7 @@ import { Modal, Form, Input, DatePicker, Select, Button } from "antd";
 import { api } from "../../../common/axios-interceptor/index";
 import { useUser } from "../../context";
 import dayjs from "dayjs";
+import "./task-modal.css"
 
 const { Option } = Select;
 
@@ -72,7 +73,7 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task }) => {
       onCancel={onClose}
       footer={null}
         modalRender={(modal) => (
-        <div style={{ maxHeight: "75vh", borderRadius: "8px",background:"white", overflowY: "auto" }}>
+        <div className="task-scroller">
           {modal}
         </div>
       )}

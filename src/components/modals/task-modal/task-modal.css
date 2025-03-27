@@ -1,0 +1,6 @@
+.task-scroller{
+    max-height: 75vh;
+    border-radius: 8px;
+    background: white;
+    overflow-y: auto;
+}

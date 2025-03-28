@@ -6,6 +6,7 @@ import { api } from "../../common/axios-interceptor/index";
 import { Button, Table } from "antd";
 import { TaskModal } from "../../components/modals/task-modal/index";
 import { UpdateStatusModal } from "../../components/modals/update-status-modal";
+import { useTranslation } from "react-i18next";
 import "./tasks.css";
 
 export const Tasks = () => {
@@ -16,6 +17,7 @@ export const Tasks = () => {
   const [statusModal, setStatusModal] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [currentStatus, setCurrentStatus] = useState(null);
+  const {t} = useTranslation();
 
 
   const location = useLocation();
@@ -90,18 +92,18 @@ export const Tasks = () => {
         <>
           {role === "USER" && (
             <Button type="link" onClick={() => handleViewTask(task)}>
-              View
+              {t("view")}
             </Button>
           )}
           {(role === "ADMIN" || role === "MANAGER") && (
             <Button type="link" onClick={() => handleEditTask(task)}>
-              Edit
+              {t("edit")}
             </Button>
           )}
           
           {role === "USER" && (
             <Button type="link" onClick={() => handleStatus(task.id,task.status)}>
-              Update
+              {t("update")}
             </Button>
           )}
         </>
@@ -115,7 +117,7 @@ export const Tasks = () => {
 
       <div className="dashboard-container">
         <div className="header">
-          <h2>Task Manager</h2>
+          <h2>{t("task-mngr")}</h2>
         </div>
         <h3>{depName}</h3>
 
@@ -128,7 +130,7 @@ export const Tasks = () => {
                 setModalVisible(true);
               }}
             >
-              Create Task
+              {t("create-task")}
             </Button>
           </div>
         )}

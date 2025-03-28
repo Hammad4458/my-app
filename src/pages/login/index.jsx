@@ -3,10 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../common/axios-interceptor/index";
 import { useUser } from "../../components/context/index";
 import { useNavigate } from "react-router-dom";
-import { Button, Radio } from "antd";
 import "antd/dist/reset.css";
 import { z } from "zod";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./login.css";
 
 const loginSchema = z.object({
@@ -15,7 +15,8 @@ const loginSchema = z.object({
 });
 
 export const Login = () => {
-  const [userType, setUserType] = useState("user"); // Default to "user"
+  const [userType, setUserType] = useState("user");
+  const {t} = useTranslation();
 
   const {
     register,
@@ -58,7 +59,7 @@ export const Login = () => {
           className="login-form"
         >
           <div className="form-group">
-            <label>Email</label>
+            <label>{t("email")}</label>
             <input
               type="email"
               {...register("email")}
@@ -70,7 +71,7 @@ export const Login = () => {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>{t("password")}</label>
             <input
               type="password"
               {...register("password")}
@@ -84,7 +85,7 @@ export const Login = () => {
           </div>
 
           <button type="submit" className="login-button">
-            Login
+            {t("login")}
           </button>
         </form>
       </div>

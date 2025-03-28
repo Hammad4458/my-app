@@ -6,6 +6,7 @@ import { Header } from "../../components/header/index";
 import { Button, Tabs, Table, Space, message, Select } from "antd";
 import { EditUserModal } from "../../components/modals/edit-user-modal/index";
 import { TaskModal } from "../../components/modals/task-modal/index";
+import { useTranslation } from "react-i18next";
 import "./dashboard.css";
 
 export const UserDashboard = () => {
@@ -19,6 +20,7 @@ export const UserDashboard = () => {
   const [adminsList, setAdminList] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const {t} = useTranslation()
 
   const navigate = useNavigate();
   const { user } = useUser();
@@ -126,11 +128,11 @@ export const UserDashboard = () => {
       render: (_, record) => (
         <Space>
           <Button type="primary" onClick={() => handleViewTasks(record.id)}>
-            View Tasks
+            {t("view-task")}
           </Button>
           {role !== "USER" && (
             <Button type="default" onClick={() => handleEditUser(record)}>
-              Edit
+           {t("edit")}
             </Button>
           )}
         </Space>
@@ -155,11 +157,11 @@ export const UserDashboard = () => {
       render: (_, record) => (
         <Space>
           <Button type="primary" onClick={() => handleViewTasks(record.id)}>
-            View Tasks
+          {t("view-task")}
           </Button>
           {role !== "USER" && (
             <Button type="default" onClick={() => handleEditUser(record)}>
-              Edit
+              {t("edit")}
             </Button>
           )}
         </Space>
@@ -200,11 +202,11 @@ export const UserDashboard = () => {
       render: (_, record) => (
         <Space>
           <Button type="primary" onClick={() => handleViewTasks(record.id)}>
-            View
+          {t("view")}
           </Button>
           {role !== "USER" && (
             <Button type="default" onClick={() => handleEditTask(record)}>
-              Edit
+              {t("edit")}
             </Button>
           )}
         </Space>
@@ -229,11 +231,11 @@ export const UserDashboard = () => {
       render: (_, record) => (
         <Space>
           <Button type="primary" onClick={() => handleViewTasks(record.id)}>
-            View Tasks
+          {t("view-task")}
           </Button>
           {role !== "USER" && (
             <Button type="default" onClick={() => handleEditUser(record)}>
-              Edit
+              {t("edit")}
             </Button>
           )}
         </Space>
@@ -260,7 +262,7 @@ export const UserDashboard = () => {
               }
             }}
           >
-            <Tabs.TabPane tab="Users" key="1">
+            <Tabs.TabPane tab={t("user")} key="1">
               <Table
                 className="table"
                 columns={userColumns}
@@ -270,29 +272,21 @@ export const UserDashboard = () => {
                 pagination={{ pageSize: 5, position: ["bottomCenter"] }}
               />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Tasks" key="2">
-              <div className="create-task-container">
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    setSelectedTask(null);
-                    setIsTaskModalOpen(true);
-                  }}
-                >
-                  Create Task
-                </Button>
-              </div>
-              <Table
-                className="table"
-                columns={taskColumns}
-                dataSource={tasks}
-                rowKey="id"
-                loading={loadingTasks}
-                pagination={{ pageSize: 5, position: ["bottomCenter"] }}
-              />
-            </Tabs.TabPane>
 
-            <Tabs.TabPane tab="Managers" key="3">
+            <Tabs.TabPane tab={t("admin")} key="4">
+             
+
+             <Table
+               className="table"
+               columns={adminColumns}
+               dataSource={adminsList}
+               rowKey="id"
+               pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+             />
+           </Tabs.TabPane>
+
+
+            <Tabs.TabPane tab={t("manager")} key="3">
              
 
               <Table
@@ -304,14 +298,25 @@ export const UserDashboard = () => {
               />
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="Admins" key="4">
-             
 
+            <Tabs.TabPane tab="Tasks" key="2">
+              <div className="create-task-container">
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    setSelectedTask(null);
+                    setIsTaskModalOpen(true);
+                  }}
+                >
+                  {t("create-task")}
+                </Button>
+              </div>
               <Table
                 className="table"
-                columns={adminColumns}
-                dataSource={adminsList}
+                columns={taskColumns}
+                dataSource={tasks}
                 rowKey="id"
+                loading={loadingTasks}
                 pagination={{ pageSize: 5, position: ["bottomCenter"] }}
               />
             </Tabs.TabPane>

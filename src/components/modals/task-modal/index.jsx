@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, DatePicker, Select, Button } from "antd";
 import { api } from "../../../common/axios-interceptor/index";
 import { useUser } from "../../context";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import "./task-modal.css"
 
@@ -11,6 +12,7 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task , isReadOnly }) =
   const [form] = Form.useForm();
   const [users, setUsers] = useState([]);
   const { user } = useUser();
+  const {t} = useTranslation();
 
   const depId = user?.department?.id;
   const userId = user.id;
@@ -82,35 +84,35 @@ export const TaskModal = ({ open, onClose, onTaskCreated, task , isReadOnly }) =
     <div className="task-modal-content">
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <div className="task-modal-body">
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+          <Form.Item name="title" label={t("title")} rules={[{ required: true }]}>
             <Input placeholder="Enter task title" disabled={isReadOnly} />
           </Form.Item>
   
-          <Form.Item name="description" label="Description">
+          <Form.Item name="description" label={t("description")}>
             <Input.TextArea placeholder="Enter task description" disabled={isReadOnly} />
           </Form.Item>
   
-          <Form.Item name="dueDate" label="Due Date">
+          <Form.Item name="dueDate" label={t("duedate")}>
             <DatePicker style={{ width: "100%" }} disabled={isReadOnly} />
           </Form.Item>
   
-          <Form.Item name="priority" label="Priority">
+          <Form.Item name="priority" label={t("priority")}>
             <Select placeholder="Select priority" disabled={isReadOnly}>
-              <Option value="HIGH">High</Option>
-              <Option value="MEDIUM">Medium</Option>
-              <Option value="LOW">Low</Option>
+              <Option value="HIGH">{t("high")}</Option>
+              <Option value="MEDIUM">{t("medium")}</Option>
+              <Option value="LOW">{t("low")}</Option>
             </Select>
           </Form.Item>
   
-          <Form.Item name="status" label="Status">
+          <Form.Item name="status" label={t("status")}>
             <Select placeholder="Select status" disabled={isReadOnly}>
-              <Option value="PENDING">Pending</Option>
-              <Option value="IN_PROGRESS">In Progress</Option>
-              <Option value="COMPLETED">Completed</Option>
+              <Option value="PENDING">{t("pending")}</Option>
+              <Option value="IN_PROGRESS">{t("in-progress")}</Option>
+              <Option value="COMPLETED">{t("completed")}</Option>
             </Select>
           </Form.Item>
   
-          <Form.Item name="assignedUsers" label="Assigned Users">
+          <Form.Item name="assignedUsers" label={t("assignedUsers")}>
             <Select mode="multiple" placeholder="Select users" disabled={isReadOnly}>
               {users.map((user) => (
                 <Option key={user.id} value={user.id}>

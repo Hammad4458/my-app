@@ -3,10 +3,12 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd"; 
 import { LogoutOutlined, ArrowLeftOutlined } from "@ant-design/icons"; 
+import { useTranslation } from "react-i18next";
 import "./header.css"; 
 
 export const Header = () => {
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   const handleLogout = () => {
     Cookies.remove("token"); 
@@ -21,7 +23,7 @@ export const Header = () => {
         type="primary"
         onClick={() => navigate(-1)}
       >
-        Back
+        {t("back")}
       </Button>
       <Button
         type="primary"
@@ -30,7 +32,7 @@ export const Header = () => {
         className="logout-button"
         onClick={handleLogout}
       >
-        Logout
+        {t("logout")}
       </Button>
     </div>
   );

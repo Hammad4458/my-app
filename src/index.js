@@ -11,6 +11,7 @@ import { UserProvider } from "./components/context/index";
 import 'antd/dist/reset.css'; 
 import {UserDashboard} from "../src/pages/user-dashboard/index"
 import { Tasks } from "./pages/tasks";
+import "./locales/il8n"
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

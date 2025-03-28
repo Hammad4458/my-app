@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../common/axios-interceptor/index";
+import { useTranslation } from "react-i18next";
 import Cookies from "js-cookie";
 
 const UserContext = createContext(null);
@@ -20,6 +21,7 @@ export const UserProvider = ({ children }) => {
   const [userType, setUserType] = useState(localStorage.getItem("userType"));
 
   const navigate = useNavigate();
+  const {t} = useTranslation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,7 +58,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, error }}>
-      {loading ? <p>Loading user data...</p> : children}
+      {loading ? <p>{t("Loading user data...")}</p> : children}
     </UserContext.Provider>
   );
 };

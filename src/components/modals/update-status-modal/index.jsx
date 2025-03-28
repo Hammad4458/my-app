@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Modal, Select, Button, message } from "antd";
 import { api } from "../../../common/axios-interceptor";
+import { useTranslation } from "react-i18next";
 
 export const UpdateStatusModal = ({ open, onClose, taskId, currentStatus, onStatusUpdated }) => {
   const [status, setStatus] = useState(currentStatus);
   const [loading, setLoading] = useState(false);
+  const {t} = useTranslation()
 
   const handleSave = async () => {
     if (!taskId) {
@@ -33,10 +35,10 @@ export const UpdateStatusModal = ({ open, onClose, taskId, currentStatus, onStat
       onCancel={onClose}
       footer={[
         <Button key="cancel" onClick={onClose} disabled={loading}>
-          Cancel
+          {t("cancel")}
         </Button>,
         <Button key="save" type="primary" onClick={handleSave} loading={loading}>
-          Save
+          {t("save")}
         </Button>
       ]}
     >
@@ -45,9 +47,9 @@ export const UpdateStatusModal = ({ open, onClose, taskId, currentStatus, onStat
         onChange={(value) => setStatus(value)}
         style={{ width: "100%" }}
       >
-        <Select.Option value="PENDING">Pending</Select.Option>
-        <Select.Option value="IN_PROGRESS">In-Progress</Select.Option>
-        <Select.Option value="COMPLETED">Completed</Select.Option>
+        <Select.Option value="PENDING">{t("pending")}</Select.Option>
+        <Select.Option value="IN_PROGRESS">{t("in-progress")}</Select.Option>
+        <Select.Option value="COMPLETED">{t("completed")}</Select.Option>
       </Select>
     </Modal>
   );
